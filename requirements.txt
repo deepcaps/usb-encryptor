@@ -1,0 +1,3 @@
+slogs >= 1.4
+cryptography
+hashlib
