@@ -42,16 +42,6 @@ class Main():
             self.log.error("Volume is not disconnected", parents.SYSTEM)
             self.gui.pop.showerror("Error", "Volume is disconnected")
             return False
-            
-        # Verify if volume is not empty
-        if len(os.listdir(self.volume)) <= 1:   # only program file
-            self.log.error("Volume is empty", parents.SYSTEM)
-            self.gui.pop.showerror("Error", "Volume is empty")
-            return False
-        elif "System Volume Information" in os.listdir(self.volume) and len(os.listdir(self.volume)) <= 2:   # only "System Volume Information" file and program file
-            self.log.error("Volume is empty", parents.SYSTEM)
-            self.gui.pop.showerror("Error", "Volume is empty")
-            return False
         
         # verify if volume is not already encrypted
         if os.path.exists(os.path.join(self.volume, "tagid")):
