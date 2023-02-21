@@ -2,10 +2,9 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives import hashes
 from cryptography.fernet import Fernet
 from base64 import b64encode, b64decode, urlsafe_b64encode
-from os import getenv, path, listdir
 from slogs import slogs, parents
 from random import randint
-from pathlib import Path
+import os
 
 from encrypt import Encrypt
 from decrypt import Decrypt
@@ -13,14 +12,14 @@ from gui.gui import Gui
 
 
 class Main():
-    def __init__(self):
+    def __init__(self):        
         # init slogs
         self.log = slogs(autoprint=True, log_saving=False)
-        
+
         # get volume
         try:
             self.volume = self.getVolume()
-        except Exception as e:   # if script is on the system drive
+        except Exception as e:   # if script is not at the root of the key or on the system drive
             self.log.error(str(e), parents.SYSTEM)
             raise e
 
@@ -39,23 +38,23 @@ class Main():
         Encrypt function: Encrypt disk with GUI inputs
         '''
         # verify if volume exist
-        if not path.exists(self.volume):
+        if not os.path.exists(self.volume):
             self.log.error("Volume is not disconnected", parents.SYSTEM)
             self.gui.pop.showerror("Error", "Volume is disconnected")
             return False
             
         # Verify if volume is not empty
-        if len(listdir(self.volume)) == 0:
+        if len(os.listdir(self.volume)) <= 1:   # only program file
             self.log.error("Volume is empty", parents.SYSTEM)
             self.gui.pop.showerror("Error", "Volume is empty")
             return False
-        elif "System Volume Information" in listdir(self.volume) and len(listdir(self.volume)) == 1:   # only "System Volume Information" file
+        elif "System Volume Information" in os.listdir(self.volume) and len(os.listdir(self.volume)) <= 2:   # only "System Volume Information" file and program file
             self.log.error("Volume is empty", parents.SYSTEM)
             self.gui.pop.showerror("Error", "Volume is empty")
             return False
         
         # verify if volume is not already encrypted
-        if path.exists(path.join(self.volume, "tagid")):
+        if os.path.exists(os.path.join(self.volume, "tagid")):
             self.log.error("Volume already encrypted", parents.SYSTEM)
             self.gui.pop.showerror("Error", "Volume already encrypted")
             return False
@@ -77,7 +76,7 @@ class Main():
             
             try:
                 # create key file
-                with open(path.join(save_path, "key.key"), "w") as f:
+                with open(os.path.join(save_path, "key.key"), "w") as f:
                     b_key = b64encode(key)   # encode key 
                     f.write(str(b_key.decode("utf-8")))
             except Exception as e:
@@ -161,9 +160,19 @@ class Main():
         '''
         Get current used volume
         '''
-        drive = Path.home().drive
+        drive = os.getcwd()
+        
+        if len(drive) >= 4:   # if the program is not at the root of the key
+            raise Exception("script is on the system drive")
+        
+        try:   # remove / or \ if exist
+            drive.replace("/", "")
+            drive.replace("\\", "")
+        except:
+            None
+        
         # check if isn't the system drive
-        if drive == getenv("SystemDrive"):
+        if drive == os.getenv("SystemDrive"):
             raise Exception("script is on the system drive")
         
         return drive
@@ -213,4 +222,3 @@ class Main():
 if __name__ == "__main__":
     # run program
     main = Main()
-    main.main()

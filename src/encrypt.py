@@ -5,6 +5,7 @@ import tempfile
 import shutil
 import csv
 import os
+import sys
 
 
 class Encrypt():
@@ -29,7 +30,7 @@ class Encrypt():
                 tempdir = os.path.join(tempdir, "working_dir")
                 
                 # copy all files and folder to temporary directory
-                file_name = os.path.basename(__file__)
+                file_name = os.path.basename(sys.argv[0])
                 shutil.copytree(self.volume, tempdir, ignore=shutil.ignore_patterns(file_name, "System Volume Information", "key.key", "logs"))
                 
                 # create archive on volume with name = id
