@@ -153,7 +153,7 @@ class Main():
         drive = os.getcwd()
         
         if len(drive) >= 4:   # if the program is not at the root of the key
-            raise Exception("script is on the system drive")
+            raise Exception("script isn't at the root of the key")
         
         try:   # remove / or \ if exist
             drive.replace("/", "")
