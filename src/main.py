@@ -151,13 +151,13 @@ class Main():
         Get current used volume
         '''
         drive = os.getcwd()
-        
-        if len(drive) >= 4:   # if the program is not at the root of the key
-            raise Exception("script isn't at the root of the key")
+
+        if len(drive) >= 4:   # if the program is not at the root of the volume
+            raise Exception("script isn't at the root of the volume")
         
         try:   # remove / or \ if exist
-            drive.replace("/", "")
-            drive.replace("\\", "")
+            drive = drive.replace("/", "")
+            drive = drive.replace("\\", "")
         except:
             None
         
